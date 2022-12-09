@@ -1,0 +1,428 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "definitions": {
+        "loss": {
+            "enum": [
+                "example_prepare_data",
+                "psnr",
+                "l1",
+                "l2",
+                "huber",
+                "ssim",
+                "wed",
+                "euclidian",
+                "exs",
+                "eps",
+                "batch_euclidian",
+                "batch_ssim",
+                "batch_eps",
+                "batch_exs",
+                "epf",
+                "adaptive",
+                "simplified_adaptive",
+                "log_mse",
+                "log_mse_bound",
+                "batch_yuv420",
+                "neon",
+                "butterfly",
+                "neoptera",
+                "entropy",
+                "entropy2",
+                "mask",
+                "iron",
+                "iron2"
+            ],
+            "type": "string"
+        },
+        "plus_params": {
+            "additionalProperties": {
+                "oneOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "integer"
+                    },
+                    {
+                        "type": "number"
+                    },
+                    {
+                        "type": "boolean"
+                    }
+                ]
+            }
+        },
+        "scheduler": {
+            "enum": [
+                "step",
+                "multistep",
+                "none",
+                "vuality",
+                "tycho",
+                "tycho-vmaf",
+                "tarkin",
+                "forge",
+                "mir",
+                "saliout"
+            ],
+            "type": "string"
+        }
+    },
+    "description": "Schema guide to build runs for the sota",
+    "properties": {
+        "$schema": {
+            "type": "string"
+        },
+        "colorspace": {
+            "description": "What is the colorspace of the model's output",
+            "enum": [
+                "rgb8",
+                "yuv420",
+                "ycbcr420",
+                "ycbcr420shift",
+                "ycocg420"
+            ],
+            "title": "Colorspace",
+            "type": "string"
+        },
+        "group": {
+            "description": "Common name to regroup the run on",
+            "title": "Group name",
+            "type": "string"
+        },
+        "maskmaker": {
+            "description": "Mask generation properties",
+            "items": {
+                "properties": {
+                    "$ref": "#/definitions/plus_params",
+                    "id": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "type": {
+                        "enum": [
+                            "example-empty",
+                            "example-constants",
+                            "example-display",
+                            "facetrack",
+                            "saliency",
+                            "sobelyst"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "type"
+                ],
+                "type": "object"
+            },
+            "title": "Maskmaker",
+            "type": "array"
+        },
+        "name": {
+            "description": "Name of this specific run, must be unique.",
+            "title": "Name of the run",
+            "type": "string"
+        },
+        "packer": {
+            "description": "Packer's name",
+            "enum": [
+                "foo"
+            ],
+            "title": "Packer",
+            "type": "string"
+        },
+        "quality_metric": {
+            "description": "Which is the quality metric for the take best option.",
+            "enum": [
+                "psnr",
+                "ssim",
+                "vmaf"
+            ],
+            "title": "Quality metric",
+            "type": "string"
+        },
+        "quantization": {
+            "additionalProperties": false,
+            "properties": {
+                "method": {
+                    "enum": [
+                        "cypher",
+                        "dozer"
+                    ],
+                    "title": "Quantization method",
+                    "type": "string"
+                }
+            },
+            "title": "Quantization",
+            "type": "object"
+        },
+        "resolution": {
+            "description": "Video to encode",
+            "enum": [
+                "-1",
+                "100p",
+                "178p",
+                "320p",
+                "480p",
+                "720p",
+                "1080p",
+                "1440p",
+                "2160p",
+                "4320p",
+                "1920x880"
+            ],
+            "title": "Resolution",
+            "type": "string"
+        },
+        "training": {
+            "additionalProperties": false,
+            "properties": {
+                "accumulate_batches": {
+                    "description": "Accumulate gradients of batches to simulate higher batch sizes.",
+                    "minimum": 0,
+                    "title": "Accumulate batches",
+                    "type": "integer"
+                },
+                "batch_size": {
+                    "description": "Number of example in one batch",
+                    "minimum": 1,
+                    "title": "Batch size",
+                    "type": "integer"
+                },
+                "fine_tuning": {
+                    "description": "Number of epochs to fine tune the model at the end",
+                    "minimum": 1,
+                    "title": "Fine tuning",
+                    "type": "integer"
+                },
+                "gradient_clipping": {
+                    "description": "Gradient clipping threshold.",
+                    "minimum": 0.0,
+                    "title": "Gradient clipping",
+                    "type": "number"
+                },
+                "loss": {
+                    "description": "Which loss to use",
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/loss"
+                        },
+                        {
+                            "$ref": "#/definitions/plus_params",
+                            "properties": {
+                                "name": {
+                                    "$ref": "#/definitions/loss",
+                                    "title": "Name of the loss"
+                                }
+                            },
+                            "required": [
+                                "name"
+                            ],
+                            "type": "object"
+                        }
+                    ],
+                    "title": "Loss"
+                },
+                "max_epochs": {
+                    "description": "Number of epochs to learn",
+                    "minimum": 1,
+                    "title": "Maximum epochs",
+                    "type": "integer"
+                },
+                "optimizer": {
+                    "description": "Which optimizer to use",
+                    "enum": [
+                        "adamo",
+                        "adam",
+                        "adams",
+                        "adab",
+                        "adamw",
+                        "adamsw",
+                        "sgd",
+                        "sgdm",
+                        "nag"
+                    ],
+                    "title": "Optimizer",
+                    "type": "string"
+                },
+                "precision": {
+                    "description": "Run in 16 or 32 bits floats",
+                    "enum": [
+                        16,
+                        32
+                    ],
+                    "title": "Precision",
+                    "type": "integer"
+                },
+                "scheduler": {
+                    "description": "Which scheduler to use",
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/scheduler"
+                        },
+                        {
+                            "$ref": "#/definitions/plus_params",
+                            "properties": {
+                                "learning_rate": {
+                                    "description": "Defines the base learning rate for the scheduler",
+                                    "oneOf": [
+                                        {
+                                            "enum": [
+                                                "megatron",
+                                                "primus",
+                                                "starscream"
+                                            ],
+                                            "type": "string"
+                                        },
+                                        {
+                                            "type": "number"
+                                        }
+                                    ],
+                                    "title": "Learning rate"
+                                },
+                                "name": {
+                                    "$ref": "#/definitions/scheduler",
+                                    "title": "Name of the scheduler"
+                                }
+                            },
+                            "required": [
+                                "name"
+                            ],
+                            "type": "object"
+                        }
+                    ],
+                    "title": "Scheduler"
+                },
+                "take_best": {
+                    "description": "The final model will be the best model found instead of the last.",
+                    "title": "Take best",
+                    "type": "boolean"
+                },
+                "topology": {
+                    "additionalProperties": false,
+                    "properties": {
+                        "builder": {
+                            "description": "Builder that will define the topology based on parameters",
+                            "enum": [
+                                "bigbang",
+                                "example_cluster",
+                                "example_save",
+                                "example_load",
+                                "example_subblock",
+                                "example_conv3d",
+                                "example_adj1d",
+                                "example_time_slider",
+                                "example_time_slider_af",
+                                "example_permute",
+                                "example_model_extra",
+                                "example_autoflow",
+                                "example_switch",
+                                "example_switch_indexed",
+                                "example_yuv420",
+                                "example_crop2d",
+                                "example_concat",
+                                "example_prune",
+                                "example_conv_module",
+                                "example_resblock",
+                                "example_context_save",
+                                "boost-pre",
+                                "boost-post",
+                                "donnager",
+                                "donnager_flow",
+                                "donnager_ones",
+                                "donnager_mp",
+                                "donnager_section_dynamic",
+                                "donnager_section_walloc",
+                                "donnager_720p",
+                                "donnager_720p_mp",
+                                "silicon_valley",
+                                "sv_section_24",
+                                "sv_section_23",
+                                "sv_section_22",
+                                "sv_section_20",
+                                "sv_section_19",
+                                "sv_section_18",
+                                "sv_section_17",
+                                "sv_section_7",
+                                "sv_section_5",
+                                "sv_section_3",
+                                "sv_section_1",
+                                "sv_section_21",
+                                "sv_section_16",
+                                "sv_section_15",
+                                "sv_section_14",
+                                "sv_section_13",
+                                "sv_section_12",
+                                "sv_section_11",
+                                "sv_section_10",
+                                "sv_section_9",
+                                "sv_section_8",
+                                "sv_section_4",
+                                "sv_section_0",
+                                "sv_section_6",
+                                "sv_section_2",
+                                "sv_cluster",
+                                "find_clusters",
+                                "find_clusters_simple",
+                                "auto_switch_cluster",
+                                "daedalus",
+                                "daedalus_2mp",
+                                "daedalus_mp",
+                                "daedalus_complex",
+                                "daedalus_yuv420",
+                                "daedalus_yuv420_mp",
+                                "devtopo",
+                                "falcon",
+                                "falcon_mp",
+                                "aurora_mp",
+                                "aurora_ref",
+                                "aurora_wish",
+                                "aurora_quant_ref",
+                                "aurora_quant_mp",
+                                "aurora_quant2_mp",
+                                "aurora_1920x880"
+                            ],
+                            "title": "Topology builder",
+                            "type": "string"
+                        },
+                        "parameters": {
+                            "description": "Parameters for the topology builder",
+                            "items": {
+                                "oneOf": [
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "integer"
+                                    },
+                                    {
+                                        "type": "number"
+                                    }
+                                ]
+                            },
+                            "title": "Model extra",
+                            "type": "array"
+                        }
+                    },
+                    "type": "object"
+                }
+            },
+            "title": "Everything about the training part",
+            "type": "object"
+        },
+        "video": {
+            "description": "Video path to encode",
+            "title": "Video",
+            "type": "string"
+        }
+    },
+    "required": [
+        "group",
+        "name",
+        "video"
+    ],
+    "type": "object"
+}

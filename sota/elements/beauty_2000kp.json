@@ -1,0 +1,28 @@
+{
+    "$schema": "./run.schema.json",
+    "group": "beauty",
+    "name": "beauty_2000kp",
+    "video": "res/videos/beauty_320p.y4m",
+    "colorspace": "ycbcr420",
+    "quality_metric": "vmaf",
+    "training": {
+        "precision": 16,
+        "scheduler": {
+            "name": "saliout",
+            "learning_rate": "primus"
+        },
+        "optimizer": "adamo",
+        "loss": "iron",
+        "take_best": true,
+        "batch_size": 16,
+        "topology": {
+            "builder": "aurora_quant2_mp",
+            "parameters": [2.0]
+        },
+        "gradient_clipping": 1.0
+    },
+    "packer": "foo",
+    "quantization": {
+        "method": "dozer"
+    }
+}
