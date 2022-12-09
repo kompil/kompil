@@ -36,7 +36,7 @@ application.
 
 * Clone the repository
 ```
-> git clone <this-repo>
+> git clone git@github.com:kompil/kompil.git
 ```
 * Install the dependancies
 ```
@@ -57,7 +57,15 @@ application.
 ```
 * Play the result video (which is random)
 ```
-> kompil play build/mock_320p.pth
+> python kompil.py play build/mock_320p.pth
+```
+* Enable CLI everywhere
+```
+> sudo ln -s $PWD/kompil.py /usr/bin/kompil
+```
+* Enable CLI autocomplete
+```
+> eval "$(register-python-argcomplete3 kompil)"
 ```
 
 ## Hierarchy
